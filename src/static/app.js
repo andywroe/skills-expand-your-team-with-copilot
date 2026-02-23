@@ -568,6 +568,7 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>
         `
         }
+        <button class="share-button" data-activity="${name}" title="Share this activity">🔗 Share</button>
       </div>
     `;
 
@@ -586,6 +587,10 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       }
     }
+
+    // Add click handler for share button
+    const shareButton = activityCard.querySelector(".share-button");
+    shareButton.addEventListener("click", () => shareActivity(name, details));
 
     activitiesList.appendChild(activityCard);
   }
@@ -797,6 +802,28 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
     );
+  }
+
+  // Share activity function
+  function shareActivity(name, details) {
+    const shareUrl = `${window.location.origin}${window.location.pathname}?activity=${encodeURIComponent(name)}`;
+    const shareText = `Check out "${name}" at Mergington High School! ${details.description}`;
+
+    if (navigator.share) {
+      navigator.share({
+        title: `${name} - Mergington High School`,
+        text: shareText,
+        url: shareUrl,
+      }).catch(() => {
+        showMessage("Unable to share activity. Please try again.", "error");
+      });
+    } else {
+      navigator.clipboard.writeText(shareUrl).then(() => {
+        showMessage(`Link copied to clipboard! Share: ${name}`, "success");
+      }).catch(() => {
+        showMessage(`Copy this link to share: ${shareUrl}`, "info");
+      });
+    }
   }
 
   // Show message function
